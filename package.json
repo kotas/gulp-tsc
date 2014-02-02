@@ -1,0 +1,41 @@
+{
+  "name": "gulp-tsc",
+  "version": "0.0.1",
+  "author": "Kota Saito <kotas.nico@gmail.com>",
+  "copyright": "2014 Kota Saito",
+  "description": "TypeScript compiler for gulp.js",
+  "license": "MIT",
+  "homepage": "https://github.com/kotas/gulp-tsc/",
+  "bugs": "https://github.com/kotas/gulp-tsc/issues",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/kotas/gulp-tsc.git"
+  },
+  "main": "index.js",
+  "scripts": {
+    "test": "./node_modules/.bin/gulp --gulpfile test-e2e/gulpfile.js"
+  },
+  "keywords": [
+    "gulpplugin",
+    "TypeScript",
+    "compile"
+  ],
+  "dependencies": {
+    "async": "~0.2.10",
+    "through2": "~0.4.1",
+    "gulp-util": "~2.2.13",
+    "shell-escape": "0.0.1",
+    "xtend": "~2.1.2",
+    "which": "~1.0.5",
+    "byline": "~4.1.1"
+  },
+  "devDependencies": {
+    "gulp": "~3.5.0",
+    "gulp-clean": "~0.2.4",
+    "gulp-expect-file": "0.0.4",
+    "run-sequence": "~0.3.2"
+  },
+  "optionalDependencies": {
+    "typescript": "~0.9.5"
+  }
+}
