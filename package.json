@@ -13,7 +13,7 @@
   },
   "main": "index.js",
   "scripts": {
-    "test": "./node_modules/.bin/gulp --gulpfile test-e2e/gulpfile.js"
+    "test": "./node_modules/.bin/mocha && ./node_modules/.bin/gulp --gulpfile test-e2e/gulpfile.js"
   },
   "keywords": [
     "gulpplugin",
@@ -33,7 +33,11 @@
     "gulp": "~3.5.0",
     "gulp-clean": "~0.2.4",
     "gulp-expect-file": "0.0.4",
-    "run-sequence": "~0.3.2"
+    "run-sequence": "~0.3.2",
+    "should": "~3.1.2",
+    "mocha": "~1.17.1",
+    "sinon": "~1.8.1",
+    "temp": "~0.6.0"
   },
   "optionalDependencies": {
     "typescript": "~0.9.5"
