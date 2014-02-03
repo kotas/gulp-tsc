@@ -1,4 +1,4 @@
-# gulp-tsc [![Build Status][travis-image]][travis-url]
+# gulp-tsc [![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Dependency Status][daviddm-image]][daviddm-url]
 > TypeScript compiler for gulp 3
 
 ## Usage
