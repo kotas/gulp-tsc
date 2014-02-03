@@ -6,7 +6,7 @@
 First, install `gulp-tsc` as a development dependency:
 
 ```shell
-npm install --save-dev kotas/gulp-tsc
+npm install --save-dev gulp-tsc
 ```
 
 Then, add it to your `gulpfile.js`:
