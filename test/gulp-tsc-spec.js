@@ -14,6 +14,8 @@ describe('gulp-tsc', function () {
   });
 
   it('compiles TypeScript files into JavaScript', function (done) {
+    this.timeout(10000);
+
     helper.createTemporaryFile({ prefix: 'gulp-tsc', suffix: '.ts' }, function (err, file) {
       if (err) return done(err);
 
