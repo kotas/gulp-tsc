@@ -25,7 +25,7 @@ describe('gulp-tsc', function () {
       var stream = typescript();
       stream.once('data', function (file) {
         file.path.should.match(/\.js$/);
-        file.contents.toString().should.equal('var s = "Hello, world";\nvar n = 10;\n');
+        file.contents.toString().should.match(/var s = "Hello, world";\r?\nvar n = 10;/);
 
         fs.existsSync(file.path).should.be.false;
 

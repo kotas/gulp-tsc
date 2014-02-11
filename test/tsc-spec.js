@@ -2,7 +2,7 @@ var helper = require('./helper');
 var tsc = require('../lib/tsc');
 var sinon = require('sinon');
 var child_process = require('child_process');
-var shellescape = require('shell-escape');
+var shellescape = require('../lib/shellescape');
 
 describe('tsc', function () {
   var execStub;
@@ -24,11 +24,8 @@ describe('tsc', function () {
 
       execStub.calledOnce.should.be.true;
 
-      var command = execStub.args[0][0].split(/ +/);
-      command[0].should.equal(shellescape([process.execPath]));
-      command[1].should.match(/tsc$/);
-      command[2].should.equal('foo');
-      command[3].should.equal('bar');
+      var command = execStub.args[0][0];
+      command.should.match(/^.+?tsc(\.cmd|\.exe)?"? foo bar$/i);
 
       done();
     });
@@ -45,10 +42,8 @@ describe('tsc', function () {
 
       execStub.calledOnce.should.be.true;
 
-      var command = execStub.args[0][0].split(/ +/);
-      command[0].should.equal(shellescape([process.execPath]));
-      command[1].should.match(/tsc$/);
-      command[2].should.equal('-v');
+      var command = execStub.args[0][0];
+      command.should.match(/^.+?tsc(\.cmd|\.exe)?"? -v$/i);
 
       done();
     });
@@ -56,7 +51,7 @@ describe('tsc', function () {
   });
 
   it('finds the tsc command location', function () {
-    tsc.find().should.match(/tsc$/);
+    tsc.find().should.match(/tsc(\.cmd|\.exe)?$/i);
   });
 
 });

@@ -24,7 +24,6 @@
     "async": "~0.2.10",
     "through2": "~0.4.1",
     "gulp-util": "~2.2.13",
-    "shell-escape": "0.0.1",
     "xtend": "~2.1.2",
     "which": "~1.0.5",
     "byline": "~4.1.1"
