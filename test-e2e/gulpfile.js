@@ -26,6 +26,7 @@ gulp.task('all', ['clean'], function (cb) {
   sequence.apply(null, tasks);
 });
 
+// Compiling single file
 gulp.task('test1', ['clean'], function () {
   return gulp.src('src/foo.ts')
     .pipe(typescript()).on('error', abort)
@@ -33,6 +34,7 @@ gulp.task('test1', ['clean'], function () {
     .pipe(expect('build/test1/foo.js'));
 });
 
+// Compiling multiple files
 gulp.task('test2', ['clean'], function () {
   return gulp.src('src/*.ts')
     .pipe(typescript()).on('error', abort)
@@ -44,6 +46,7 @@ gulp.task('test2', ['clean'], function () {
     ]));
 });
 
+// Compiling multiple files keeping directory structure
 gulp.task('test3', ['clean'], function () {
   return gulp.src('src/**/*.ts')
     .pipe(typescript()).on('error', abort)
@@ -57,6 +60,7 @@ gulp.task('test3', ['clean'], function () {
     ]));
 });
 
+// Compiling multiple files into one file
 gulp.task('test4', ['clean'], function () {
   return gulp.src('src/*.ts')
     .pipe(typescript({ out: 'test4.js' })).on('error', abort)
@@ -64,6 +68,7 @@ gulp.task('test4', ['clean'], function () {
     .pipe(expect('build/test4/test4.js'));
 });
 
+// Compiling fails and outputs nothing
 gulp.task('test5', ['clean'], function () {
   return gulp.src('src-broken/error.ts')
     .pipe(typescript()).on('error', ignore)
@@ -71,9 +76,37 @@ gulp.task('test5', ['clean'], function () {
     .pipe(expect([]));
 });
 
+// Compiling warns some errors but outputs a file
 gulp.task('test6', ['clean'], function () {
   return gulp.src('src-broken/warning.ts')
     .pipe(typescript()).on('error', ignore)
     .pipe(gulp.dest('build/test6'))
     .pipe(expect('build/test6/warning.js'));
+});
+
+// Compiling files including .d.ts file
+gulp.task('test7', ['clean'], function () {
+  return gulp.src(['src-d/*.ts'])
+    .pipe(typescript()).on('error', abort)
+    .pipe(gulp.dest('build/test7'))
+    .pipe(expect([
+      'build/test7/main.js',
+      'build/test7/sub.js'
+    ]))
+});
+
+// Compiling files including .d.ts file into one
+gulp.task('test8', ['clean'], function () {
+  return gulp.src('src-d/*.ts')
+    .pipe(typescript({ out: 'unified.js' })).on('error', abort)
+    .pipe(gulp.dest('build/test8'))
+    .pipe(expect('build/test8/unified.js'))
+});
+
+// Compiling .d.ts file only
+gulp.task('test9', ['clean'], function () {
+  return gulp.src('src-d/hello.d.ts')
+    .pipe(typescript()).on('error', abort)
+    .pipe(gulp.dest('build/test9'))
+    .pipe(expect([]))
 });
