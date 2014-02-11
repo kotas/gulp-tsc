@@ -18,7 +18,11 @@
   "keywords": [
     "gulpplugin",
     "typescript",
-    "compile"
+    "gulp",
+    "tsc",
+    "compile",
+    "transpile",
+    "compiler"
   ],
   "dependencies": {
     "async": "~0.2.10",
