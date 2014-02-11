@@ -53,6 +53,15 @@ describe('Compiler', function () {
       compiler.outputFiles[1].path.should.equal('/test.d.ts');
       compiler.outputFiles[2].path.should.equal('/test.js.map');
     });
+
+    it('never adds an output file for .d.ts file', function () {
+      var sourceFile = new File({ cwd: '/', path: '/test.d.ts' });
+
+      var compiler = new Compiler();
+      compiler.addSourceFile(sourceFile);
+
+      compiler.outputFiles.should.be.empty;
+    });
   });
 
   describe('#compile', function () {
