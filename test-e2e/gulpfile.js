@@ -86,8 +86,27 @@ gulp.task('test6', ['clean'], function () {
 
 // Compiling files including .d.ts file
 gulp.task('test7', ['clean'], function () {
-  return gulp.src('src-d/*.ts')
+  return gulp.src(['src-d/*.ts'])
     .pipe(typescript()).on('error', abort)
     .pipe(gulp.dest('build/test7'))
-    .pipe(expect('build/test7/main.js'))
+    .pipe(expect([
+      'build/test7/main.js',
+      'build/test7/sub.js'
+    ]))
+});
+
+// Compiling files including .d.ts file into one
+gulp.task('test8', ['clean'], function () {
+  return gulp.src('src-d/*.ts')
+    .pipe(typescript({ out: 'unified.js' })).on('error', abort)
+    .pipe(gulp.dest('build/test8'))
+    .pipe(expect('build/test8/unified.js'))
+});
+
+// Compiling .d.ts file only
+gulp.task('test9', ['clean'], function () {
+  return gulp.src('src-d/hello.d.ts')
+    .pipe(typescript()).on('error', abort)
+    .pipe(gulp.dest('build/test9'))
+    .pipe(expect([]))
 });
