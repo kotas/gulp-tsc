@@ -17,7 +17,7 @@
   },
   "keywords": [
     "gulpplugin",
-    "TypeScript",
+    "typescript",
     "compile"
   ],
   "dependencies": {
