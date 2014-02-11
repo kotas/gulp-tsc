@@ -25,7 +25,7 @@ describe('tsc', function () {
       execStub.calledOnce.should.be.true;
 
       var command = execStub.args[0][0];
-      command.should.match(/^.+?tsc(\.cmd|\.exe)?"? foo bar$/);
+      command.should.match(/^.+?tsc(\.cmd|\.exe)?"? foo bar$/i);
 
       done();
     });
@@ -43,7 +43,7 @@ describe('tsc', function () {
       execStub.calledOnce.should.be.true;
 
       var command = execStub.args[0][0];
-      command.should.match(/^.+?tsc(\.cmd|\.exe)?"? -v$/);
+      command.should.match(/^.+?tsc(\.cmd|\.exe)?"? -v$/i);
 
       done();
     });
@@ -51,7 +51,7 @@ describe('tsc', function () {
   });
 
   it('finds the tsc command location', function () {
-    tsc.find().should.match(/tsc(\.cmd|\.exe)?$/);
+    tsc.find().should.match(/tsc(\.cmd|\.exe)?$/i);
   });
 
 });
