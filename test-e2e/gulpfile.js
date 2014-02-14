@@ -15,7 +15,7 @@ var ignore = function (err) { };
 gulp.task('default', ['all']);
 
 gulp.task('clean', function () {
-  return gulp.src('build', { read: false })
+  return gulp.src('{build,src-inplace/**/*.js}', { read: false })
     .pipe(clean());
 });
 
@@ -158,4 +158,17 @@ gulp.task('test13', ['clean'], function () {
         /"sources":\[("(proj-b\/util.ts|proj-a\/main.ts)",?){2}\]/
       ]
     }))
+});
+
+// Compiling into source directory (in-place)
+gulp.task('test14', ['clean'], function () {
+  return gulp.src('src-inplace/**/*.ts')
+    .pipe(typescript())
+    .pipe(gulp.dest('src-inplace'))
+    .pipe(expect([
+      'src-inplace/top1.js',
+      'src-inplace/top2.js',
+      'src-inplace/sub/sub1.js',
+      'src-inplace/sub/sub2.js',
+    ]))
 });
