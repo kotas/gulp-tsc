@@ -32,7 +32,10 @@ describe('Compiler', function () {
   describe('#compile', function () {
     it('executes tsc command', function (done) {
       var proc = helper.createDummyProcess();
-      this.sinon.stub(tsc, 'exec').returns(proc);
+      this.sinon.stub(tsc, 'exec', function () {
+        proc.terminate(0);
+        return proc;
+      });
 
       var compiler = new Compiler();
       compiler.compile(function (err) {
@@ -48,13 +51,14 @@ describe('Compiler', function () {
 
         done();
       });
-
-      proc.terminate(0);
     });
 
     it('removes temporary directory after compilation', function (done) {
       var proc = helper.createDummyProcess();
-      this.sinon.stub(tsc, 'exec').returns(proc);
+      this.sinon.stub(tsc, 'exec', function () {
+        proc.terminate(0);
+        return proc;
+      });
 
       var compiler = new Compiler();
       compiler.compile(function (err) {
@@ -62,22 +66,28 @@ describe('Compiler', function () {
         fs.existsSync(compiler.tempDestination).should.be.false;
         done();
       });
-
-      proc.terminate(0);
     });
 
     it('emits output file as data event', function (done) {
-      var proc = helper.createDummyProcess();
-      this.sinon.stub(tsc, 'exec').returns(proc);
-
+      var _this = this;
       helper.createTemporaryFile({ prefix: 'gulp-tsc', suffix: '.ts' }, function (err, file) {
         if (err) return done(err);
 
+        var proc = helper.createDummyProcess();
         var outputFilePath;
         var outputFileContents = 'test file';
         var fileEmitted = false;
-
         var compiler = new Compiler([file]);
+
+        _this.sinon.stub(tsc, 'exec', function () {
+          process.nextTick(function () {
+            outputFilePath = path.join(compiler.tempDestination, 'test.js');
+            fs.writeFileSync(outputFilePath, outputFileContents);
+            proc.terminate(0);
+          });
+          return proc;
+        });
+
         compiler.compile(function (err) {
           if (err) return done(err);
           if (!fileEmitted) return done(new Error('No data event emitted'));
@@ -89,45 +99,39 @@ describe('Compiler', function () {
           file.contents.toString().should.eql(outputFileContents);
           fileEmitted = true;
         });
-
-        setTimeout(function wait() {
-          if (!compiler.tempDestination) return setTimeout(wait, 10);
-          outputFilePath = path.join(compiler.tempDestination, 'test.js');
-          fs.writeFileSync(outputFilePath, outputFileContents);
-          proc.terminate(0);
-        }, 10);
       });
     });
 
     it('bypasses outputs from tsc process as events', function (done) {
       var proc = helper.createDummyProcess();
-      this.sinon.stub(tsc, 'exec').returns(proc);
+      this.sinon.stub(tsc, 'exec', function() {
+        process.nextTick(function () {
+          proc.stdout.write('test stdout1\n');
+          proc.stderr.write('test stderr1\n');
+          proc.stdout.write('test stdout2\n');
+          proc.stderr.write('test stderr2\n');
+          proc.terminate(0);
+        });
+        return proc;
+      });
 
-      var emitted = [];
+      var stdout = [], stderr = [];
 
       var compiler = new Compiler();
-      compiler.on('stdout', function (line) { emitted.push(['stdout', line.toString()]) });
-      compiler.on('stderr', function (line) { emitted.push(['stderr', line.toString()]) });
+      compiler.on('stdout', function (line) { stdout.push(line.toString()) });
+      compiler.on('stderr', function (line) { stderr.push(line.toString()) });
 
       compiler.compile(function (err) {
         if (err) return done(err);
 
-        emitted.should.have.length(4);
-        emitted[0].should.eql(['stdout', 'test stdout1']);
-        emitted[1].should.eql(['stderr', 'test stderr1']);
-        emitted[2].should.eql(['stdout', 'test stdout2']);
-        emitted[3].should.eql(['stderr', 'test stderr2']);
+        stdout.should.have.length(2);
+        stdout.should.eql(['test stdout1', 'test stdout2']);
+
+        stderr.should.have.length(2);
+        stderr.should.eql(['test stderr1', 'test stderr2']);
 
         done();
       });
-
-      setTimeout(function () {
-        proc.stdout.write('test stdout1\n');
-        proc.stderr.write('test stderr1\n');
-        proc.stdout.write('test stdout2\n');
-        proc.stderr.write('test stderr2\n');
-        proc.terminate(0);
-      }, 10);
     });
   });
 
