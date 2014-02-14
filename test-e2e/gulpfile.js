@@ -119,6 +119,7 @@ gulp.task('test10', ['clean'], function () {
     .pipe(expect([
       'build/test10/proj-a/main.js',
       'build/test10/proj-b/util.js',
+      'build/test10/proj-b/sub/sub.js',
     ]))
 });
 
@@ -139,10 +140,12 @@ gulp.task('test12', ['clean'], function () {
     .pipe(typescript({ sourcemap: true, outDir: 'build/test12' }))
     .pipe(gulp.dest('build/test12'))
     .pipe(expect({
-      'build/test12/proj-a/main.js':     true,
-      'build/test12/proj-a/main.js.map': '"sources":["../../../src-crossproj/proj-a/main.ts"]',
-      'build/test12/proj-b/util.js':     true,
-      'build/test12/proj-b/util.js.map': '"sources":["../../../src-crossproj/proj-b/util.ts"]'
+      'build/test12/proj-a/main.js':        true,
+      'build/test12/proj-a/main.js.map':    '"sources":["../../../src-crossproj/proj-a/main.ts"]',
+      'build/test12/proj-b/util.js':        true,
+      'build/test12/proj-b/util.js.map':    '"sources":["../../../src-crossproj/proj-b/util.ts"]',
+      'build/test12/proj-b/sub/sub.js':     true,
+      'build/test12/proj-b/sub/sub.js.map': '"sources":["../../../../src-crossproj/proj-b/sub/sub.ts"]'
     }))
 });
 
@@ -155,7 +158,7 @@ gulp.task('test13', ['clean'], function () {
       'build/test13/unified.js':     true,
       'build/test13/unified.js.map': [
         '"sourceRoot":"/"',
-        /"sources":\[("(proj-b\/util.ts|proj-a\/main.ts)",?){2}\]/
+        /"sources":\[("(proj-b\/util\.ts|proj-b\/sub\/sub\.ts|proj-a\/main\.ts)",?){3}\]/
       ]
     }))
 });
