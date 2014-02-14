@@ -110,3 +110,14 @@ gulp.task('test9', ['clean'], function () {
     .pipe(gulp.dest('build/test9'))
     .pipe(expect([]))
 });
+
+// Compiling cross-project files
+gulp.task('test10', ['clean'], function () {
+  return gulp.src('src-crossproj/proj-a/main.ts')
+    .pipe(typescript()).on('error', abort)
+    .pipe(gulp.dest('build/test10'))
+    .pipe(expect([
+      'build/test10/proj-a/main.js',
+      'build/test10/proj-b/util.js',
+    ]))
+});
