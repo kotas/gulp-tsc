@@ -4,6 +4,7 @@ var tsc = require('../lib/tsc');
 var sinon = require('sinon');
 var File = require('gulp-util').File;
 var fs = require('fs');
+var path = require('path');
 
 describe('Compiler', function () {
 
@@ -28,42 +29,6 @@ describe('Compiler', function () {
     });
   });
 
-  describe('#addSourceFile', function () {
-    it('adds a source file and an output file for it', function () {
-      var sourceFile = new File({ cwd: '/', path: '/test.ts' });
-
-      var compiler = new Compiler();
-      compiler.addSourceFile(sourceFile);
-
-      compiler.sourceFiles.should.have.length(1);
-      compiler.sourceFiles[0].path.should.equal('/test.ts');
-
-      compiler.outputFiles.should.have.length(1);
-      compiler.outputFiles[0].path.should.equal('/test.js');
-    });
-
-    it('adds also .map and .d.ts files when required', function () {
-      var sourceFile = new File({ cwd: '/', path: '/test.ts' });
-
-      var compiler = new Compiler({ sourcemap: true, declaration: true });
-      compiler.addSourceFile(sourceFile);
-
-      compiler.outputFiles.should.have.length(3);
-      compiler.outputFiles[0].path.should.equal('/test.js');
-      compiler.outputFiles[1].path.should.equal('/test.d.ts');
-      compiler.outputFiles[2].path.should.equal('/test.js.map');
-    });
-
-    it('never adds an output file for .d.ts file', function () {
-      var sourceFile = new File({ cwd: '/', path: '/test.d.ts' });
-
-      var compiler = new Compiler();
-      compiler.addSourceFile(sourceFile);
-
-      compiler.outputFiles.should.be.empty;
-    });
-  });
-
   describe('#compile', function () {
     it('executes tsc command', function (done) {
       var proc = helper.createDummyProcess();
@@ -75,7 +40,11 @@ describe('Compiler', function () {
 
         tsc.exec.calledOnce.should.be.true;
         var args = tsc.exec.args[0];
-        args[0].should.eql(['--module', 'commonjs', '--target', 'ES3']);
+        args[0].should.eql([
+          '--module', 'commonjs',
+          '--target', 'ES3',
+          '--outDir', compiler.tempDestination
+        ]);
 
         done();
       });
@@ -83,53 +52,50 @@ describe('Compiler', function () {
       proc.terminate(0);
     });
 
-    it('removes generated file after compilation', function (done) {
+    it('removes temporary directory after compilation', function (done) {
       var proc = helper.createDummyProcess();
       this.sinon.stub(tsc, 'exec').returns(proc);
 
-      helper.createTemporaryFile({ prefix: 'gulp-tsc', suffix: '.ts' }, function (err, file) {
+      var compiler = new Compiler();
+      compiler.compile(function (err) {
         if (err) return done(err);
-
-        var compiler = new Compiler();
-        compiler.addSourceFile(file);
-        compiler.outputFiles.should.have.length(1);
-        var outputFile = compiler.outputFiles[0];
-
-        compiler.compile(function (err) {
-          if (err) return done(err);
-          fs.existsSync(outputFile.path).should.be.false;
-          done();
-        });
-
-        setTimeout(function () {
-          fs.writeFileSync(outputFile.path, 'test file');
-          proc.terminate(0);
-        }, 10);
+        fs.existsSync(compiler.tempDestination).should.be.false;
+        done();
       });
+
+      proc.terminate(0);
     });
 
-    it('keeps existed file after compilation', function (done) {
+    it('emits output file as data event', function (done) {
       var proc = helper.createDummyProcess();
       this.sinon.stub(tsc, 'exec').returns(proc);
 
       helper.createTemporaryFile({ prefix: 'gulp-tsc', suffix: '.ts' }, function (err, file) {
         if (err) return done(err);
 
-        var compiler = new Compiler();
-        compiler.addSourceFile(file);
-        compiler.outputFiles.should.have.length(1);
-        var outputFile = compiler.outputFiles[0];
+        var outputFilePath;
+        var outputFileContents = 'test file';
+        var fileEmitted = false;
 
-        fs.writeFileSync(outputFile.path, 'test file');
-
+        var compiler = new Compiler([file]);
         compiler.compile(function (err) {
           if (err) return done(err);
-          fs.existsSync(outputFile.path).should.be.true;
-          fs.unlinkSync(outputFile.path);
+          if (!fileEmitted) return done(new Error('No data event emitted'));
+          fs.existsSync(outputFilePath).should.be.false;
           done();
         });
+        compiler.on('data', function (file) {
+          file.path.should.eql(outputFilePath);
+          file.contents.toString().should.eql(outputFileContents);
+          fileEmitted = true;
+        });
 
-        proc.terminate(0);
+        setTimeout(function wait() {
+          if (!compiler.tempDestination) return setTimeout(wait, 10);
+          outputFilePath = path.join(compiler.tempDestination, 'test.js');
+          fs.writeFileSync(outputFilePath, outputFileContents);
+          proc.terminate(0);
+        }, 10);
       });
     });
 

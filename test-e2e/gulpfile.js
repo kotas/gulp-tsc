@@ -6,7 +6,7 @@ var typescript = require('../index');
 var expectFile = require('gulp-expect-file');
 
 var expect = function (files) {
-  return expectFile({ checkRealFile: true, errorOnFailure: true }, files);
+  return expectFile({ checkRealFile: true, errorOnFailure: true, verbose: true }, files);
 };
 
 var abort  = function (err) { throw err; };
@@ -21,7 +21,7 @@ gulp.task('clean', function () {
 
 gulp.task('all', ['clean'], function (cb) {
   var tasks = Object.keys(this.tasks).filter(function (k) { return /^test\d+/.test(k) });
-  tasks.sort();
+  tasks.sort(function (a, b) { return a.match(/\d+/)[0] - b.match(/\d+/)[0] });
   tasks.push(cb);
   sequence.apply(null, tasks);
 });
@@ -120,4 +120,42 @@ gulp.task('test10', ['clean'], function () {
       'build/test10/proj-a/main.js',
       'build/test10/proj-b/util.js',
     ]))
+});
+
+// Compiling with sourcemap
+gulp.task('test11', ['clean'], function () {
+  return gulp.src('src/foo.ts')
+    .pipe(typescript({ sourcemap: true }))
+    .pipe(gulp.dest('build/test11'))
+    .pipe(expect({
+      'build/test11/foo.js':     true,
+      'build/test11/foo.js.map': '"sources":["../src/foo.ts"]'
+    }))
+});
+
+// Compiling sourcemap files
+gulp.task('test12', ['clean'], function () {
+  return gulp.src('src-crossproj/proj-a/main.ts')
+    .pipe(typescript({ sourcemap: true, outDir: 'build/test12' }))
+    .pipe(gulp.dest('build/test12'))
+    .pipe(expect({
+      'build/test12/proj-a/main.js':     true,
+      'build/test12/proj-a/main.js.map': '"sources":["../../../src-crossproj/proj-a/main.ts"]',
+      'build/test12/proj-b/util.js':     true,
+      'build/test12/proj-b/util.js.map': '"sources":["../../../src-crossproj/proj-b/util.ts"]'
+    }))
+});
+
+// Compiling sourcemap files into one file
+gulp.task('test13', ['clean'], function () {
+  return gulp.src('src-crossproj/proj-a/main.ts')
+    .pipe(typescript({ sourcemap: true, sourceRoot: '/', out: 'unified.js' }))
+    .pipe(gulp.dest('build/test13'))
+    .pipe(expect({
+      'build/test13/unified.js':     true,
+      'build/test13/unified.js.map': [
+        '"sourceRoot":"/"',
+        /"sources":\[("(proj-b\/util.ts|proj-a\/main.ts)",?){2}\]/
+      ]
+    }))
 });
