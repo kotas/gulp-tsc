@@ -30,7 +30,9 @@
     "gulp-util": "~2.2.13",
     "xtend": "~2.1.2",
     "which": "~1.0.5",
-    "byline": "~4.1.1"
+    "byline": "~4.1.1",
+    "temp": "~0.6.0",
+    "vinyl-fs": "0.0.2"
   },
   "devDependencies": {
     "gulp": "~3.5.0",
@@ -39,8 +41,7 @@
     "run-sequence": "~0.3.2",
     "should": "~3.1.2",
     "mocha": "~1.17.1",
-    "sinon": "~1.8.1",
-    "temp": "~0.6.0"
+    "sinon": "~1.8.1"
   },
   "optionalDependencies": {
     "typescript": "~0.9.5"

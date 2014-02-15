@@ -10,11 +10,11 @@ module.exports.createDummyProcess = function () {
   proc.stdout = new stream.PassThrough();
   proc.stderr = new stream.PassThrough();
   proc.terminate = function (code) {
-    setTimeout(function () {
+    process.nextTick(function () {
       proc.stdout.end();
       proc.stderr.end();
       proc.emit('exit', code);
-    }, 10);
+    });
   };
   return proc;
 };

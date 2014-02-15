@@ -23,13 +23,15 @@ describe('gulp-tsc', function () {
       fs.closeSync(file.fd);
 
       var stream = typescript();
+      var outputFile;
       stream.once('data', function (file) {
         file.path.should.match(/\.js$/);
         file.contents.toString().should.match(/var s = "Hello, world";\r?\nvar n = 10;/);
-
-        fs.existsSync(file.path).should.be.false;
-
+        outputFile = file;
         done();
+      });
+      stream.on('end', function () {
+        fs.existsSync(outputFile.path).should.be.false;
       });
       stream.write(file);
       stream.end();

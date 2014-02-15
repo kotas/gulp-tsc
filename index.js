@@ -6,30 +6,34 @@ var through = require('through2');
 var async = require('async');
 
 module.exports = function (options) {
-  var compiler = new Compiler(options);
-
-  compiler.on('stdout', function (line) {
-    gutil.log(gutil.colors.green('[tsc] >'), line);
-  });
-  compiler.on('stderr', function (line) {
-    gutil.log(gutil.colors.red('[tsc] >'), line);
-  });
-  compiler.on('error', function (err) {
-    gutil.log(gutil.colors.red('[tsc] Error: ' + err.toString()));
-    err.stack && console.log(gutil.color.gray(err.stack));
-  });
+  var sourceFiles = [];
 
   function eachFile(file, encoding, done) {
-    compiler.addSourceFile(file, encoding);
+    sourceFiles.push(file);
     done();
   }
 
   function endStream(done) {
-    if (compiler.sourceFiles.length === 0) {
+    if (sourceFiles.length === 0) {
       return done();
     }
 
     var _this = this;
+    var compiler = new Compiler(sourceFiles, options);
+    compiler.on('stdout', function (line) {
+      gutil.log(gutil.colors.green('[tsc] >'), line);
+    });
+    compiler.on('stderr', function (line) {
+      gutil.log(gutil.colors.red('[tsc] >'), line);
+    });
+    compiler.on('error', function (err) {
+      gutil.log(gutil.colors.red('[tsc] Error: ' + err.toString()));
+      err.stack && console.log(gutil.color.gray(err.stack));
+    });
+    compiler.on('data', function (file) {
+      _this.push(file);
+    });
+
     async.waterfall([
       function (next) {
         compiler.getVersion(next);
@@ -43,8 +47,7 @@ module.exports = function (options) {
         gutil.log(gutil.colors.red('Failed to compile TypeScript:', err));
         _this.emit('error', new gutil.PluginError('gulp-tsc', 'Failed to compile: ' + (err.message || err)));
       }
-      compiler.outputFiles.forEach(function (f) { _this.push(f) });
-      compiler.clear();
+      sourceFiles = [];
       done();
     });
   }
