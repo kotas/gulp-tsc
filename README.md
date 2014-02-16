@@ -51,6 +51,14 @@ This options changes how this plugin searches for `tsc` command on your system.
 
 See `options.tscPath` for details.
 
+#### options.emitError
+Type: `Boolean`
+Default: `true`
+
+If set to true, this plugin emits `error` event on compilation failure, which causes gulp to abort running task.
+
+See [Error handling](#error-handling) for details.
+
 #### options.module
 Type: `String` (`"commonjs"` or `"amd"`)
 Default: `"commonjs"`
@@ -166,6 +174,28 @@ This is because of gulp's mechanism which does not allow gulp plugins to know wh
 gulp-tsc assumes that your output files go into `{working directory}/something/` so that the relative paths in sourcemap files are based on that path by default.
 
 `sourceRoot` option is an absolute path to the source location, so you can also fix this problem by specifying it instead of `outDir`.
+
+## Error handling
+
+If gulp-tsc fails to compile files, it emits `error` event with `gutil.PluginError` as the manner of gulp plugins.
+
+This causes gulp to stop running on TypeScript compile errors, which is sometimes a problem like using with `gulp.watch()`.
+
+If you want to suppress the error, just pass `{ emitError: false }` to gulp-tsc like below.
+
+```
+var typescript = require('gulp-tsc');
+
+gulp.task('default', function () {
+    gulp.watch('src/**/*.ts', ['compile'])
+});
+
+gulp.task('compile', function () {
+    return gulp.src('src/**/*.ts')
+        .pipe(typescript({ emitError: false }))
+        .pipe(gulp.dest('dest/'));
+});
+```
 
 
 [npm-url]: https://npmjs.org/package/gulp-tsc

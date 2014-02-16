@@ -175,3 +175,11 @@ gulp.task('test14', ['clean'], function () {
       'src-inplace/sub/sub2.js',
     ]))
 });
+
+// emitError: false
+gulp.task('test15', ['clean'], function () {
+  return gulp.src('src-broken/error.ts')
+    .pipe(typescript({ emitError: false }))
+    .pipe(gulp.dest('build/test5'))
+    .pipe(expect([]));
+});

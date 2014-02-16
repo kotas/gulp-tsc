@@ -7,6 +7,7 @@ var async = require('async');
 
 module.exports = function (options) {
   var sourceFiles = [];
+  var emitError   = (!options || options.emitError !== false);
 
   function eachFile(file, encoding, done) {
     sourceFiles.push(file);
@@ -45,7 +46,9 @@ module.exports = function (options) {
     ], function (err) {
       if (err) {
         gutil.log(gutil.colors.red('Failed to compile TypeScript:', err));
-        _this.emit('error', new gutil.PluginError('gulp-tsc', 'Failed to compile: ' + (err.message || err)));
+        if (emitError) {
+          _this.emit('error', new gutil.PluginError('gulp-tsc', 'Failed to compile: ' + (err.message || err)));
+        }
       }
       sourceFiles = [];
       done();
