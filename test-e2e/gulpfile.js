@@ -126,7 +126,7 @@ gulp.task('test10', ['clean'], function () {
 // Compiling with sourcemap
 gulp.task('test11', ['clean'], function () {
   return gulp.src('src/foo.ts')
-    .pipe(typescript({ sourcemap: true }))
+    .pipe(typescript({ sourcemap: true })).on('error', abort)
     .pipe(gulp.dest('build/test11'))
     .pipe(expect({
       'build/test11/foo.js':     true,
@@ -137,7 +137,7 @@ gulp.task('test11', ['clean'], function () {
 // Compiling sourcemap files
 gulp.task('test12', ['clean'], function () {
   return gulp.src('src-crossproj/proj-a/main.ts')
-    .pipe(typescript({ sourcemap: true, outDir: 'build/test12' }))
+    .pipe(typescript({ sourcemap: true, outDir: 'build/test12' })).on('error', abort)
     .pipe(gulp.dest('build/test12'))
     .pipe(expect({
       'build/test12/proj-a/main.js':        true,
@@ -152,7 +152,7 @@ gulp.task('test12', ['clean'], function () {
 // Compiling sourcemap files into one file
 gulp.task('test13', ['clean'], function () {
   return gulp.src('src-crossproj/proj-a/main.ts')
-    .pipe(typescript({ sourcemap: true, sourceRoot: '/', out: 'unified.js' }))
+    .pipe(typescript({ sourcemap: true, sourceRoot: '/', out: 'unified.js' })).on('error', abort)
     .pipe(gulp.dest('build/test13'))
     .pipe(expect({
       'build/test13/unified.js':     true,
@@ -166,7 +166,7 @@ gulp.task('test13', ['clean'], function () {
 // Compiling into source directory (in-place)
 gulp.task('test14', ['clean'], function () {
   return gulp.src('src-inplace/**/*.ts')
-    .pipe(typescript())
+    .pipe(typescript()).on('error', abort)
     .pipe(gulp.dest('src-inplace'))
     .pipe(expect([
       'src-inplace/top1.js',
@@ -180,6 +180,6 @@ gulp.task('test14', ['clean'], function () {
 gulp.task('test15', ['clean'], function () {
   return gulp.src('src-broken/error.ts')
     .pipe(typescript({ emitError: false }))
-    .pipe(gulp.dest('build/test5'))
+    .pipe(gulp.dest('build/test15'))
     .pipe(expect([]));
 });
