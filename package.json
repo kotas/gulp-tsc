@@ -1,6 +1,6 @@
 {
   "name": "gulp-tsc",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "author": "Kota Saito <kotas.nico@gmail.com>",
   "copyright": "2014 Kota Saito",
   "description": "TypeScript compiler for gulp.js",
