@@ -1,6 +1,8 @@
 var gulp = require('gulp');
 var gutil = require('gulp-util');
 var sequence = require('run-sequence');
+var glob = require('glob');
+var es = require('event-stream');
 var clean = require('gulp-clean');
 var typescript = require('../index');
 var expectFile = require('gulp-expect-file');
@@ -182,4 +184,31 @@ gulp.task('test15', ['clean'], function () {
     .pipe(typescript({ emitError: false }))
     .pipe(gulp.dest('build/test15'))
     .pipe(expect([]));
+});
+
+// Compile two project in one task
+gulp.task('test16', ['clean'], function () {
+  var ps = es.pause();
+
+  var one = gulp.src('src/s1/*.ts')
+    .pipe(ps.pause())  // Pausing stream for 1 sec
+    .pipe(typescript()).on('error', abort)
+    .pipe(gulp.dest('build/test16/s1'));
+
+  var two = gulp.src('src/s2/*.ts')
+    .pipe(typescript()).on('error', abort)
+    .pipe(gulp.dest('build/test16/s2'));
+
+  setTimeout(function () { ps.resume() }, 1000);
+
+  return es.merge(one, two)
+    .pipe(expect([
+      'build/test16/s1/a.js',
+      'build/test16/s2/b.js'
+    ]))
+    .on('end', function () {
+      if (glob.sync('gulp-tsc-tmp-*').length > 0) {
+        throw "Temporary directory is left behind";
+      }
+    });
 });

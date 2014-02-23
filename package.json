@@ -32,7 +32,8 @@
     "which": "~1.0.5",
     "byline": "~4.1.1",
     "temp": "~0.6.0",
-    "vinyl-fs": "0.0.2"
+    "vinyl-fs": "0.0.2",
+    "rimraf": "~2.2.6"
   },
   "devDependencies": {
     "gulp": "~3.5.0",
@@ -41,7 +42,9 @@
     "run-sequence": "~0.3.2",
     "should": "~3.1.2",
     "mocha": "~1.17.1",
-    "sinon": "~1.8.1"
+    "sinon": "~1.8.1",
+    "event-stream": "~3.1.0",
+    "glob": "~3.2.8"
   },
   "optionalDependencies": {
     "typescript": "~0.9.5"
