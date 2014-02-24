@@ -135,4 +135,34 @@ describe('Compiler', function () {
     });
   });
 
+  describe('.abortAll', function () {
+    it('aborts all running compiles', function (done) {
+      this.sinon.stub(tsc, 'exec', function () {
+        throw new Error('should not be here');
+      });
+
+      var compiler1 = new Compiler(), called1 = false;
+      var compiler2 = new Compiler(), called2 = false;
+
+      compiler1.compile(function (err) {
+        err.should.be.an.Error;
+        err.message.should.eql('aborted');
+        called1 = true;
+      });
+      compiler2.compile(function (err) {
+        err.should.be.an.Error;
+        err.message.should.eql('aborted');
+        called2 = true;
+      });
+
+      Compiler.abortAll(function () {
+        process.nextTick(function () {
+          called1.should.be.true;
+          called2.should.be.true;
+          done();
+        });
+      });
+    });
+  });
+
 });

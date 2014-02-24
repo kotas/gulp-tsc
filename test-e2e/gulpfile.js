@@ -212,3 +212,24 @@ gulp.task('test16', ['clean'], function () {
       }
     });
 });
+
+// Compile two project in one task with errors
+gulp.task('test17', ['clean'], function () {
+  var one = gulp.src('src-broken/error.ts')
+    .pipe(typescript()).on('error', ignore)
+    .pipe(gulp.dest('build/test17/s1'));
+
+  var two = gulp.src('src/s2/*.ts')
+    .pipe(typescript()).on('error', ignore)
+    .pipe(gulp.dest('build/test17/s2'));
+
+  return es.merge(one, two)
+    .pipe(expect([
+      'build/test17/s2/b.js'
+    ]))
+    .on('end', function () {
+      if (glob.sync('gulp-tsc-tmp-*').length > 0) {
+        throw "Temporary directory is left behind";
+      }
+    });
+});
