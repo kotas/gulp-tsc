@@ -47,7 +47,12 @@ module.exports = function (options) {
       if (err) {
         gutil.log(gutil.colors.red('Failed to compile TypeScript:', err));
         if (emitError) {
-          _this.emit('error', new gutil.PluginError('gulp-tsc', 'Failed to compile: ' + (err.message || err)));
+          Compiler.abortAll(function () {
+            _this.emit('error', new gutil.PluginError('gulp-tsc', 'Failed to compile: ' + (err.message || err)));
+            sourceFiles = [];
+            done();
+          });
+          return;
         }
       }
       sourceFiles = [];
