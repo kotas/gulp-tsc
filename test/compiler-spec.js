@@ -137,8 +137,14 @@ describe('Compiler', function () {
 
   describe('.abortAll', function () {
     it('aborts all running compiles', function (done) {
+      var procs = [helper.createDummyProcess(), helper.createDummyProcess()];
       this.sinon.stub(tsc, 'exec', function () {
-        throw new Error('should not be here');
+        if (procs.length == 2) {
+          abort();
+        }
+        var proc = procs.shift();
+        process.nextTick(function () { proc.terminate(0); });
+        return proc;
       });
 
       var compiler1 = new Compiler(), called1 = false;
@@ -155,13 +161,15 @@ describe('Compiler', function () {
         called2 = true;
       });
 
-      Compiler.abortAll(function () {
-        process.nextTick(function () {
-          called1.should.be.true;
-          called2.should.be.true;
-          done();
+      function abort() {
+        Compiler.abortAll(function () {
+          process.nextTick(function () {
+            called1.should.be.true;
+            called2.should.be.true;
+            done();
+          });
         });
-      });
+      }
     });
   });
 
