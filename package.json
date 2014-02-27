@@ -47,6 +47,6 @@
     "glob": "~3.2.8"
   },
   "optionalDependencies": {
-    "typescript": "~0.9.5"
+    "typescript": "~0.9.7"
   }
 }
