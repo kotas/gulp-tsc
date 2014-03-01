@@ -195,6 +195,17 @@ gulp.task('tsc', function() {
 
 This will put 'gulp-tsc-tmp-xxxxx' folders in '.tmp'.
 
+
+#### options.noLib
+Type: `Boolean`
+Default: `false`
+
+`--noLib` option for `tsc` command.
+
+Set `noLib` to `true` will dramatically reduce compile time, because 'tsc' will ignore builtin declarations like 'lib.d.ts'.
+So if you are not using 'lib.d.ts' or prefer speed, set this to `true`.
+In my case `noLib:true` only takes 25% time compared to `noLib:false`.
+
 ## Error handling
 
 If gulp-tsc fails to compile files, it emits `error` event with `gutil.PluginError` as the manner of gulp plugins.
