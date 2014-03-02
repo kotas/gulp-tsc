@@ -37,7 +37,7 @@ If not set, this plugin searches for `tsc` command in the order as described bel
 2. from PATH of the running shell (using [node-which](https://github.com/isaacs/node-which))
 3. from Bundled `typescript` module
 
-(This search list can be modified by `options.tscSearch`)
+(This search list can be modified by [options.tscSearch](#optionstscsearch))
 
 So, if you want to use other version of `tsc` command, you can add any version of `typescript` module to your project's dependecy.
 
@@ -49,7 +49,7 @@ Default: `['cwd', 'shell', 'bundle']`
 
 This options changes how this plugin searches for `tsc` command on your system.
 
-See `options.tscPath` for details.
+See [options.tscPath](#optionstscpath) for details.
 
 #### options.emitError
 Type: `Boolean`
@@ -85,7 +85,7 @@ A path to the directory where output files are finally going to.
 
 This option does not affect the actual output directory for `tsc` command.
 
-See `options.sourcemap` for usage of this option.
+See [options.sourcemap](#optionssourcemap) for usage of this option.
 
 #### options.mapRoot
 Type: `String`
@@ -175,13 +175,16 @@ gulp-tsc assumes that your output files go into `{working directory}/something/`
 
 `sourceRoot` option is an absolute path to the source location, so you can also fix this problem by specifying it instead of `outDir`.
 
-
 #### options.tmpDir
 Type: `String`
-Default: `''`
+Default: `''` (current working directory)
 
-A path relative to current working directory, where temporary build folders will be put in.
+A path relative to current working directory, where a temporary build folder will be put in.
+
+**Notice**: If you use this option with sourcemaps, consider to specify `outDir` or `sourceRoot`. See [options.sourcemap](#optionssourcemap) for details.
+
 If you are watching some files in current working directory with gulp.watch(), the creation of temporary build folder will trigger a folder change event.
+
 If this is unexpected, you can put temp folders in a non-watched directory with this option.
 
 Example:
@@ -193,8 +196,7 @@ gulp.task('tsc', function() {
 });
 ```
 
-This will put 'gulp-tsc-tmp-xxxxx' folders in '.tmp'.
-
+This will put a temporary folder in '.tmp'.
 
 #### options.noLib
 Type: `Boolean`
@@ -203,8 +205,8 @@ Default: `false`
 `--noLib` option for `tsc` command.
 
 Set `noLib` to `true` will dramatically reduce compile time, because 'tsc' will ignore builtin declarations like 'lib.d.ts'.
-So if you are not using 'lib.d.ts' or prefer speed, set this to `true`.
-In my case `noLib:true` only takes 25% time compared to `noLib:false`.
+
+So if you are not using 'lib.d.ts' or prefer speed, set this to `true`. (In my case `noLib:true` only takes 25% time compared to `noLib:false`)
 
 ## Error handling
 
