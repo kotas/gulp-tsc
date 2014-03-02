@@ -1,8 +1,11 @@
 {
   "name": "gulp-tsc",
   "version": "0.4.0",
-  "author": "Kota Saito <kotas.nico@gmail.com>",
+  "author": "Kota Saito <kotas.nico@gmail.com> (https://github.com/kotas)",
   "copyright": "2014 Kota Saito",
+  "contributors": [
+    "Cai Lei (https://github.com/ccll)"
+  ],
   "description": "TypeScript compiler for gulp.js",
   "license": "MIT",
   "homepage": "https://github.com/kotas/gulp-tsc/",
