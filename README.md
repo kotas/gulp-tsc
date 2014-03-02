@@ -175,6 +175,37 @@ gulp-tsc assumes that your output files go into `{working directory}/something/`
 
 `sourceRoot` option is an absolute path to the source location, so you can also fix this problem by specifying it instead of `outDir`.
 
+
+#### options.tmpDir
+Type: `String`
+Default: `''`
+
+A path relative to current working directory, where temporary build folders will be put in.
+If you are watching some files in current working directory with gulp.watch(), the creation of temporary build folder will trigger a folder change event.
+If this is unexpected, you can put temp folders in a non-watched directory with this option.
+
+Example:
+```
+gulp.task('tsc', function() {
+  return gulp.src(src.ts)
+        .pipe(tsc({tmpDir:'.tmp'}))
+        .pipe(gulp.dest('.tmp/js'));
+});
+```
+
+This will put 'gulp-tsc-tmp-xxxxx' folders in '.tmp'.
+
+
+#### options.noLib
+Type: `Boolean`
+Default: `false`
+
+`--noLib` option for `tsc` command.
+
+Set `noLib` to `true` will dramatically reduce compile time, because 'tsc' will ignore builtin declarations like 'lib.d.ts'.
+So if you are not using 'lib.d.ts' or prefer speed, set this to `true`.
+In my case `noLib:true` only takes 25% time compared to `noLib:false`.
+
 ## Error handling
 
 If gulp-tsc fails to compile files, it emits `error` event with `gutil.PluginError` as the manner of gulp plugins.
