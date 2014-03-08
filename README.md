@@ -33,7 +33,7 @@ The path to `tsc` command for compile.
 
 If not set, this plugin searches for `tsc` command in the order as described below:
 
-1. from `(current directory)/node_module/typescript/bin/tsc` (i.e. `typescript` module installed as your project's dependency)
+1. from `typescript` module installed as your project's dependency (i.e. `require("typescript")` on current directory)
 2. from PATH of the running shell (using [node-which](https://github.com/isaacs/node-which))
 3. from Bundled `typescript` module
 
