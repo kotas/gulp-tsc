@@ -233,3 +233,27 @@ gulp.task('test17', ['clean'], function () {
       }
     });
 });
+
+// Compile files in nested directory
+gulp.task('test18', ['clean'], function () {
+  return gulp.src('src-inplace/*/*.ts')
+    .pipe(typescript({ sourcemap: true, outDir: 'build/test18' })).on('error', abort)
+    .pipe(gulp.dest('build/test18'))
+    .pipe(expect({
+      'build/test18/sub/sub1.js':     true,
+      'build/test18/sub/sub1.js.map': '"sources":["../../../src-inplace/sub/sub1.ts"]',
+      'build/test18/sub/sub2.js':     true,
+      'build/test18/sub/sub2.js.map': '"sources":["../../../src-inplace/sub/sub2.ts"]'
+    }))
+});
+
+// Compile files in nested directory into one file
+gulp.task('test19', ['clean'], function () {
+  return gulp.src('src-inplace/*/*.ts')
+    .pipe(typescript({ sourcemap: true, outDir: 'build/test19', out: 'test19.js' })).on('error', abort)
+    .pipe(gulp.dest('build/test19'))
+    .pipe(expect({
+      'build/test19/test19.js':     true,
+      'build/test19/test19.js.map': /"sources":\[("..\/..\/src-inplace\/sub\/sub[12].ts",?){2}\]/
+    }))
+});

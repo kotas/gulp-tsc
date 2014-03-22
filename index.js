@@ -29,7 +29,7 @@ module.exports = function (options) {
     });
     compiler.on('error', function (err) {
       gutil.log(gutil.colors.red('[tsc] Error: ' + err.toString()));
-      err.stack && console.log(gutil.color.gray(err.stack));
+      err.stack && console.log(gutil.colors.gray(err.stack));
     });
     compiler.on('data', function (file) {
       _this.push(file);
