@@ -67,7 +67,7 @@ Default: `"commonjs"`
 
 #### options.target
 Type: `String` (`"ES3"` or `"ES5"`)
-Default: `"ES5"`
+Default: `"ES3"`
 
 `--target` option for `tsc` command.
 
