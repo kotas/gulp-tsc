@@ -257,3 +257,15 @@ gulp.task('test19', ['clean'], function () {
       'build/test19/test19.js.map': /"sources":\[("..\/..\/src-inplace\/sub\/sub[12].ts",?){2}\]/
     }))
 });
+
+// for https://github.com/kotas/gulp-tsc/issues/21
+gulp.task('test20', ['clean'], function () {
+  return gulp.src('src-crossproj/*-a/*.ts')
+    .pipe(typescript({ outDir: 'build/test20' })).on('error', abort)
+    .pipe(gulp.dest('build/test20'))
+    .pipe(expect([
+      'build/test20/proj-a/main.js',
+      'build/test20/proj-b/util.js',
+      'build/test20/proj-b/sub/sub.js'
+    ]));
+});
