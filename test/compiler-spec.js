@@ -92,6 +92,7 @@ describe('Compiler', function () {
           if (err) return done(err);
           if (!fileEmitted) return done(new Error('No data event emitted'));
           fs.existsSync(outputFilePath).should.be.false;
+          fs.existsSync(compiler.treeKeeperFile).should.be.false;
           done();
         });
         compiler.on('data', function (file) {

@@ -198,6 +198,8 @@ gulp.task('tsc', function() {
 
 This will put a temporary folder in '.tmp'.
 
+See [Temporary directory and file by gulp-tsc](#temporary-directory-and-file-by-gulp-tsc) for details.
+
 #### options.noLib
 Type: `Boolean`
 Default: `false`
@@ -207,6 +209,14 @@ Default: `false`
 Set `noLib` to `true` will dramatically reduce compile time, because 'tsc' will ignore builtin declarations like 'lib.d.ts'.
 
 So if you are not using 'lib.d.ts' or prefer speed, set this to `true`. (In my case `noLib:true` only takes 25% time compared to `noLib:false`)
+
+#### options.keepTree
+Type: `Boolean`
+Default: `true`
+
+If set to false, gulp-tsc skips creating a temporary file in your source directory which is used for keeping source directory structure in output.
+
+See [Temporary directory and file by gulp-tsc](#temporary-directory-and-file-by-gulp-tsc) for details.
 
 ## Error handling
 
@@ -229,6 +239,18 @@ gulp.task('compile', function () {
         .pipe(gulp.dest('dest/'));
 });
 ```
+
+## Temporary directory and file by gulp-tsc
+
+Since gulp-tsc uses `tsc` command internally for compiling TypeScript files, compiled JavaScript files require to be written on the file system temporarily.
+
+For those compiled files, gulp-tsc creates a temporary directory named `gulp-tsc-tmp-*` in the current working directory. You can change the location of the temporary directory by [options.tmpDir](#optionstmpdir).
+
+In addition, gulp-tsc also creates a temporary file named `.gulp-tsc-tmp-*.ts` in your source root directory while compiling. The source root is determined by your `gulp.src()`. (e.g. For `gulp.src("src/**/*.ts")`, the source root is `src/`)
+
+This is required for keeping your source directory structure in output since tsc command omits the common part of your output paths.
+
+If you do not need to keep the structure, you can skip creating the temporary file by setting [options.keepTree](#optionskeeptree) to false.
 
 
 [npm-url]: https://npmjs.org/package/gulp-tsc
