@@ -28,7 +28,7 @@
     "compiler"
   ],
   "dependencies": {
-    "async": "^0.2.10",
+    "async": "^0.6.2",
     "through2": "^0.4.1",
     "gulp-util": "^2.2.14",
     "xtend": "^2.1.2",
