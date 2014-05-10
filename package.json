@@ -28,10 +28,10 @@
     "compiler"
   ],
   "dependencies": {
-    "async": "^0.6.2",
+    "async": "^0.8.0",
     "through2": "^0.4.1",
     "gulp-util": "^2.2.14",
-    "xtend": "^2.1.2",
+    "xtend": "^3.0.0",
     "which": "^1.0.5",
     "byline": "^4.1.1",
     "temp": "^0.7.0",
