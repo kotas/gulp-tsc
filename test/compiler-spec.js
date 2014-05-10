@@ -179,15 +179,26 @@ describe('Compiler', function () {
     });
 
     it('changes file.relative by mapping object', function () {
-      var file = helper.createDummyFile({
-        path: '/tmp/foo/bar/baz.js',
-        base: '/tmp'
-      });
-      var filter = { 'foo/bar': 'qux' };
-      var compiler = new Compiler([], { pathFilter: filter });
+      var file, expected;
+      if (path.sep === '/') {
+        file = helper.createDummyFile({
+          path: '/tmp/foo/bar/baz.js',
+          base: '/tmp'
+        });
+        expected = '/tmp/qux/baz.js';
+      } else if (path.sep === '\\') {
+        file = helper.createDummyFile({
+          path: 'C:\\tmp\\foo\\bar\\baz.js',
+          base: 'C:\\tmp'
+        });
+        expected = 'C:\\tmp\\qux\\baz.js';
+      } else {
+        return;
+      }
 
+      var compiler = new Compiler([], { pathFilter: { 'foo/bar': 'qux' } });
       var ret = compiler.filterOutput(file);
-      file.path.should.eql('/tmp/qux/baz.js');
+      file.path.should.eql(expected);
     });
   });
 
