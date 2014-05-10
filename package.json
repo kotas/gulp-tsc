@@ -31,13 +31,13 @@
     "async": "^0.8.0",
     "through2": "^0.4.1",
     "gulp-util": "^2.2.14",
-    "xtend": "^3.0.0",
     "which": "^1.0.5",
     "byline": "^4.1.1",
     "temp": "^0.7.0",
     "vinyl-fs": "^0.1.0",
     "rimraf": "^2.2.6",
-    "resolve": "^0.6.1"
+    "resolve": "^0.6.1",
+    "lodash": "^2.4.1"
   },
   "devDependencies": {
     "gulp": "^3.5.5",
