@@ -19,6 +19,14 @@ module.exports.createDummyProcess = function () {
   return proc;
 };
 
+module.exports.createDummyFile = function (options) {
+  options = options || {};
+  if (!options.path) options.path = temp.path({ suffix: '.ts' });
+  if (!options.base) options.base = path.dirname(options.path);
+  if (!options.cwd)  options.cwd  = options.base;
+  return new gutil.File(options);
+};
+
 module.exports.createTemporaryFile = function (fixes, callback) {
   temp.track();
   temp.open(fixes, function (err, info) {

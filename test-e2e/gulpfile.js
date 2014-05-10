@@ -269,3 +269,22 @@ gulp.task('test20', ['clean'], function () {
       'build/test20/proj-b/sub/sub.js'
     ]));
 });
+
+// Compiling files with pathFilter
+gulp.task('test21', ['clean'], function () {
+  return gulp.src('src-crossproj/proj-a/*.ts')
+    .pipe(typescript({
+      sourcemap: true,
+      outDir: 'build/test21',
+      pathFilter: { 'proj-a': 'a/build', 'proj-b': 'b/build' }
+    })).on('error', abort)
+    .pipe(gulp.dest('build/test21'))
+    .pipe(expect({
+      'build/test21/a/build/main.js':        true,
+      'build/test21/a/build/main.js.map':    '"sources":["../../../../src-crossproj/proj-a/main.ts"]',
+      'build/test21/b/build/util.js':        true,
+      'build/test21/b/build/util.js.map':    '"sources":["../../../../src-crossproj/proj-b/util.ts"]',
+      'build/test21/b/build/sub/sub.js':     true,
+      'build/test21/b/build/sub/sub.js.map': '"sources":["../../../../../src-crossproj/proj-b/sub/sub.ts"]'
+    }))
+});

@@ -1,6 +1,7 @@
 var helper = require('./helper');
 var Compiler = require('../lib/compiler');
 var tsc = require('../lib/tsc');
+var should = require('should');
 var sinon = require('sinon');
 var File = require('gulp-util').File;
 var fs = require('fs');
@@ -133,6 +134,71 @@ describe('Compiler', function () {
 
         done();
       });
+    });
+  });
+
+  describe('#filterOutput', function () {
+    it('passes files to pathFilter', function () {
+      var filter = this.sinon.spy();
+      var file = helper.createDummyFile();
+      var compiler = new Compiler([], { pathFilter: filter });
+
+      var ret = compiler.filterOutput(file);
+      ret.should.equal(file);
+
+      filter.calledOnce.should.be.true;
+      filter.calledWith(file.relative, file);
+    });
+
+    it('changes file.relative by returned path', function () {
+      var filter = function () { return 'foo.js' };
+      var file = helper.createDummyFile();
+      var compiler = new Compiler([], { pathFilter: filter });
+
+      var ret = compiler.filterOutput(file);
+      ret.should.equal(file);
+      file.relative.should.eql('foo.js');
+    });
+
+    it('returns file as-is when filter returned true', function () {
+      var filter = function () { return true };
+      var file = helper.createDummyFile();
+      var compiler = new Compiler([], { pathFilter: filter });
+
+      var ret = compiler.filterOutput(file);
+      ret.should.equal(file);
+    });
+
+    it('returns null when filter returned false', function () {
+      var filter = function () { return false; };
+      var file = helper.createDummyFile();
+      var compiler = new Compiler([], { pathFilter: filter });
+
+      var ret = compiler.filterOutput(file);
+      should(ret).be.null;
+    });
+
+    it('changes file.relative by mapping object', function () {
+      var file, expected;
+      if (path.sep === '/') {
+        file = helper.createDummyFile({
+          path: '/tmp/foo/bar/baz.js',
+          base: '/tmp'
+        });
+        expected = '/tmp/qux/baz.js';
+      } else if (path.sep === '\\') {
+        file = helper.createDummyFile({
+          path: 'C:\\tmp\\foo\\bar\\baz.js',
+          base: 'C:\\tmp'
+        });
+        expected = 'C:\\tmp\\qux\\baz.js';
+      } else {
+        return;
+      }
+
+      var compiler = new Compiler([], { pathFilter: { 'foo/bar': 'qux' } });
+      var ret = compiler.filterOutput(file);
+      file.path.should.eql(expected);
     });
   });
 
