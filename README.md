@@ -47,7 +47,7 @@ However, this plugin could fail to run the future `tsc` because of incompatible 
 Type: `Array` of `String`
 Default: `['cwd', 'shell', 'bundle']`
 
-This options changes how this plugin searches for `tsc` command on your system.
+This option changes how this plugin searches for `tsc` command on your system.
 
 See [options.tscPath](#optionstscpath) for details.
 
@@ -217,6 +217,54 @@ Default: `true`
 If set to false, gulp-tsc skips creating a temporary file in your source directory which is used for keeping source directory structure in output.
 
 See [Temporary directory and file by gulp-tsc](#temporary-directory-and-file-by-gulp-tsc) for details.
+
+#### options.pathFilter
+Type: `Object`, `Function`
+Default: `null`
+
+This option is used for modifying paths of compiled files.
+
+You can pass a Hash-like object which is a mapping of output paths in relative form.
+
+Example:
+```
+gulp.task('compile', function(){
+  gulp.src(['src/**/*.ts'])
+    .pipe(typescript({
+      pathFilter: { 'aaa/bbb': 'xxx/yyy' }
+    }))
+    .pipe(gulp.dest('build/'))
+});
+```
+
+The example above will compile `src/aaa/bbb/ccc.ts` into `build/xxx/yyy/ccc.js`.
+
+You can also pass a function which takes a relative path of compiled files as an argument and returns a modified path.
+
+Example:
+```
+gulp.task('compile', function(){
+  gulp.src(['src/**/*.ts'])
+    .pipe(typescript({
+      pathFilter: function (path) { return path.replace(/^aaa\/bbb/, 'xxx/yyy') }
+    }))
+    .pipe(gulp.dest('build/'))
+});
+```
+
+A path filter function will receive following two arguments:
+
+- `String`: A relative path to a compiled file.
+- `vinyl.File`: A [vinyl.File](https://github.com/wearefractal/vinyl) object of a compiled file.
+
+A path filter function can return `Boolean`, `String`, `vinyl.File` or `undefined`.
+
+| Returned value      | Effect |
+| ------------------- | ------ |
+| `true`, `undefined` | Use the file as-is. |
+| `false`             | Skip the file. (not piped into output gulp stream) |
+| `String`            | Replace the file's path with the returned string. |
+| `vinyl.File`        | Use the returned vinyl.File instead. |
 
 ## Error handling
 
