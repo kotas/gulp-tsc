@@ -288,3 +288,32 @@ gulp.task('test21', ['clean'], function () {
       'build/test21/b/build/sub/sub.js.map': '"sources":["../../../../../src-crossproj/proj-b/sub/sub.ts"]'
     }))
 });
+
+// Compiling warns some errors and outputs nothing
+gulp.task('test22', ['clean'], function () {
+  return gulp.src('src-broken/warning.ts')
+    .pipe(typescript({ safe: true })).on('error', ignore)
+    .pipe(gulp.dest('build/test22'))
+    .pipe(expect([]));
+});
+
+// Compile two project in one task with warnings
+gulp.task('test23', ['clean'], function () {
+  var one = gulp.src('src-broken/warning.ts')
+    .pipe(typescript({ safe: true })).on('error', ignore)
+    .pipe(gulp.dest('build/test23/s1'));
+
+  var two = gulp.src('src/s2/*.ts')
+    .pipe(typescript()).on('error', ignore)
+    .pipe(gulp.dest('build/test23/s2'));
+
+  return es.merge(one, two)
+    .pipe(expect([
+      'build/test23/s2/b.js'
+    ]))
+    .on('end', function () {
+      if (glob.sync('gulp-tsc-tmp-*').length > 0) {
+        throw "Temporary directory is left behind";
+      }
+    });
+});
