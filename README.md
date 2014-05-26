@@ -266,6 +266,14 @@ A path filter function can return `Boolean`, `String`, `vinyl.File` or `undefine
 | `String`            | Replace the file's path with the returned string. |
 | `vinyl.File`        | Use the returned vinyl.File instead. |
 
+#### options.safe
+Type: `Boolean`
+Default: `false`
+
+By default, gulp-tsc ignores warnings from tsc command and emits compiled js files to the gulp stream anyway.
+
+If set this option to true, gulp-tsc never emits compiled files when tsc command returned warnings or errors.
+
 ## Error handling
 
 If gulp-tsc fails to compile files, it emits `error` event with `gutil.PluginError` as the manner of gulp plugins.
