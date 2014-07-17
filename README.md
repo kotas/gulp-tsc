@@ -85,7 +85,7 @@ A path to the directory where output files are finally going to.
 
 This option does not affect the actual output directory for `tsc` command.
 
-See [options.sourcemap](#optionssourcemap) for usage of this option.
+See [Path modification](#path-modification) for usage of this option.
 
 #### options.mapRoot
 Type: `String`
@@ -119,6 +119,8 @@ Default: `false`
 
 Generated `.d.ts` file is also piped into the stream.
 
+**Notice**: If your output files are NOT going to `{working directory}/something/` (to a directory beneath the working directory), you have to tell your output path to gulp-tsc by `outDir` option for correct reference paths. See [Path modification](#path-modification) for details.
+
 #### options.noImplicitAny
 Type: `Boolean`
 Default: `false`
@@ -145,35 +147,7 @@ Default: `false`
 
 Generated `.js.map` file is also piped into the stream.
 
-**Notice**: If your output files are NOT going to `{working directory}/something/` (to a directory beneath the working directory), you have to tell your output path to gulp-tsc by `outDir` option or `sourceRoot` option.
-
-If you have a gulp task like this:
-
-```
-gulp.task('compile', function(){
-  gulp.src(['src/**/*.ts'])
-    .pipe(typescript({ sourcemap: true }))
-    .pipe(gulp.dest('foo/bar/'))
-});
-```
-
-Output files are going under `{working directory}/foo/bar/`, but sourcemap files will contain a relative path to source files from `{working directory}/foo/` which is not correct.
-
-To fix the relative path, just specify `outDir` with your `gulp.dest` path.
-
-```
-gulp.task('compile', function(){
-  gulp.src(['src/**/*.ts'])
-    .pipe(typescript({ sourcemap: true, outDir: 'foo/bar/' }))
-    .pipe(gulp.dest('foo/bar/'))
-});
-```
-
-This is because of gulp's mechanism which does not allow gulp plugins to know where the output files are going to be stored finally.
-
-gulp-tsc assumes that your output files go into `{working directory}/something/` so that the relative paths in sourcemap files are based on that path by default.
-
-`sourceRoot` option is an absolute path to the source location, so you can also fix this problem by specifying it instead of `outDir`.
+**Notice**: If your output files are NOT going to `{working directory}/something/` (to a directory beneath the working directory), you have to tell your output path to gulp-tsc by `outDir` option or `sourceRoot` option. See [Path modification](#path-modification) for details.
 
 #### options.tmpDir
 Type: `String`
@@ -293,6 +267,36 @@ gulp.task('compile', function () {
     return gulp.src('src/**/*.ts')
         .pipe(typescript({ emitError: false }))
         .pipe(gulp.dest('dest/'));
+});
+```
+
+## Path modification
+
+gulp-tsc does some modification to output files to correct relative paths in sourcemap files (.js.map) and declaration files (.d.ts).
+
+However, gulp-tsc doesn't know where your output files are going to be stored finally since it is specified by `gulp.dest` and gulp-tsc cannot access to it. So gulp-tsc assumes that your output files go into `{working directory}/something/` by default.
+
+If your output files are not going there, you have to tell your output path to gulp-tsc by `outDir` option.
+
+If you have a gulp task like this:
+
+```
+gulp.task('compile', function(){
+  gulp.src(['src/**/*.ts'])
+    .pipe(typescript({ sourcemap: true, declaration: true }))
+    .pipe(gulp.dest('foo/bar/'))
+});
+```
+
+Output files are going under `{working directory}/foo/bar/`, but sourcemap files and declaration files will contain a relative path to source files from `{working directory}/foo/` which is not correct.
+
+To fix the relative path, just specify `outDir` same as your `gulp.dest` path.
+
+```
+gulp.task('compile', function(){
+  gulp.src(['src/**/*.ts'])
+    .pipe(typescript({ sourcemap: true, declaration: true, outDir: 'foo/bar/' }))
+    .pipe(gulp.dest('foo/bar/'))
 });
 ```
 

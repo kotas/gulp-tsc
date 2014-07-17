@@ -317,3 +317,15 @@ gulp.task('test23', ['clean'], function () {
       }
     });
 });
+
+// Compile files reference to declarations in outer directory with correct path
+// for https://github.com/kotas/gulp-tsc/issues/26
+gulp.task('test24', ['clean'], function () {
+  return gulp.src('src-d-outer/**/main.ts')
+    .pipe(typescript({ declaration: true, outDir: 'build/test24' })).on('error', abort)
+    .pipe(gulp.dest('build/test24'))
+    .pipe(expect({
+      'build/test24/src/main.js':    true,
+      'build/test24/src/main.d.ts':  '<reference path="../../../src-d-outer/hello.d.ts" />'
+    }))
+});
